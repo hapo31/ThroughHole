@@ -15,7 +15,7 @@ namespace CamPreview
 
         public IEnumerable<WasapiAudioDevices> Get()
         {
-            return from device in new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active)
+            return from device in new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.All)
                    select new WasapiAudioDevices { Name = $"{device.FriendlyName}", Device = device };
         }
     }

@@ -11,24 +11,22 @@ namespace CamPreview
     internal class AudioPassthrough : IDisposable
     {
         private IWavePlayer player;
-        private WasapiLoopbackCapture waveIn;
+        private WasapiCapture waveIn;
 
         private BufferedWaveProvider provider;
 
         public bool Disposed { get; private set; } = false;
 
-
         public AudioPassthrough(MMDevice device, MMDevice outputDevice)
         {
-            waveIn = new WasapiLoopbackCapture(device);
+            waveIn = new WasapiCapture(device);
             waveIn.DataAvailable += WaveIn_DataAvailable;
             waveIn.RecordingStopped += WaveIn_RecordingStopped;
-            waveIn.WaveFormat = new WaveFormat(44100, 16, 2);
+            waveIn.WaveFormat = new WaveFormat(48000, 16, 2);
 
             provider = new BufferedWaveProvider(waveIn.WaveFormat);
             player = new WasapiOut(outputDevice, AudioClientShareMode.Shared, false, 300);
             player.Init(new VolumeWaveProvider16(provider));
-            player.Volume = 0.5f;
 
             player.Play();
             waveIn.StartRecording();
