@@ -56,6 +56,7 @@ namespace CamPreview
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
+            CapturePreview.Dispose();
             Close();
         }
 
