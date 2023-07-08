@@ -3,7 +3,7 @@ using System.IO;
 using System.Drawing.Imaging;
 using System.Windows.Media.Imaging;
 
-namespace CamPreview
+namespace CamPreview.Model
 {
     internal class BitmapToFrame
     {

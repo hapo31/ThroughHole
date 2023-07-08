@@ -1,4 +1,4 @@
-﻿using NAudio.CoreAudioApi;
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Media;
 
-namespace CamPreview
+namespace CamPreview.Model
 {
     internal class AudioPassthrough : IDisposable
     {

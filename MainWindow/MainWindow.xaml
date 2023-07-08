@@ -1,0 +1,27 @@
+<Window x:Class="CamPreview.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CamPreview;assembly="
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        WindowStyle="None"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        MouseDoubleClick="Window_MouseDoubleClick"
+        ResizeMode="CanResizeWithGrip"
+        Background="Black"
+        >
+    <Window.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="ビデオキャプチャデバイス" Name="CaptureVideoDevicesMenu" ItemsSource="{Binding VideoDevicesMenu}" Click="CaptureVideoDeviceMenuClick" />
+            <MenuItem Header="オーディオキャプチャデバイス" Name="CaptureAudioDevicesMenu" ItemsSource="{Binding AudioDevicesMenu}" Click="CaptureAudioDeviceMenuClick" />
+            <MenuItem Header="ミュート" IsChecked="{Binding Muted}" Click="MuteMenuItemClick"/>
+            <MenuItem Header="About" />
+            <MenuItem Header="閉じる" Click="MenuItem_Click" />
+        </ContextMenu>
+    </Window.ContextMenu>
+    <StackPanel>
+        <local:CapturePreview x:Name="CapturePreview" AudioCaptureDevice="{Binding ConnectedAudioDevice}" VideoCaptureMonikerString="{Binding ConnectedVideoDeviceMonikerString}" />
+    </StackPanel>
+</Window>
