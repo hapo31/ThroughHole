@@ -18,53 +18,53 @@ namespace CamPreview.ViewModel
         public event NewFrameEventHandler NewFrameGot = delegate { };
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private VideoCaptureDevice? videoCapture;
-        private AudioPassthrough? audioCapture;
+        public VideoCaptureDevice? VideoCapture { get; private set; }
+        public AudioPassthrough? AudioCapture { get; private set; }
 
         // audioCapture は、オーディオデバイスが見つからない、あえて再生しないなどが考えられるので考慮しない
-        public bool IsConnected { get => videoCapture != null; }
+        public bool IsConnected { get => VideoCapture != null; }
 
         public CapturePreviewViewModel() { }
 
         public void StartAudioCapture(WasapiAudioDevice device)
         {
-            CloseAudioDevice();
-            audioCapture = new AudioPassthrough(device);
+            StopAudioCapture();
+            AudioCapture = new AudioPassthrough(device);
         }
 
         public void StartVideoCapture(string monikerString)
         {
-            CloseVideoDevice();
-            videoCapture = new VideoCaptureDevice(monikerString);
-            videoCapture.NewFrame += NewFrameGot;
-            videoCapture.Start();
+            StopVideoCapture();
+            VideoCapture = new VideoCaptureDevice(monikerString);
+            VideoCapture.NewFrame += NewFrameGot;
+            VideoCapture.Start();
         }
 
         public void Disconnect()
         {
-            CloseVideoDevice();
-            CloseAudioDevice();
+            StopVideoCapture();
+            StopAudioCapture();
         }
 
-        private void CloseVideoDevice()
+        public void StopVideoCapture()
         {
-            if (videoCapture == null)
+            if (VideoCapture == null)
             {
                 return;
             }
-            videoCapture.NewFrame -= NewFrameGot;
-            videoCapture.SignalToStop();
-            videoCapture = null;
+            VideoCapture.NewFrame -= NewFrameGot;
+            VideoCapture.SignalToStop();
+            VideoCapture = null;
         }
 
-        private void CloseAudioDevice()
+        public void StopAudioCapture()
         {
-            if (audioCapture == null)
+            if (AudioCapture == null)
             {
                 return;
             }
-            audioCapture.Dispose();
-            audioCapture = null;
+            AudioCapture.Dispose();
+            AudioCapture = null;
         }
 
         protected virtual void RaisePropertyChanged(string propertyName)
@@ -74,8 +74,8 @@ namespace CamPreview.ViewModel
 
         public void Dispose()
         {
-            CloseVideoDevice();
-            CloseAudioDevice();
+            StopVideoCapture();
+            StopAudioCapture();
         }
     }
 }

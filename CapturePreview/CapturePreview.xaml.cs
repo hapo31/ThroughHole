@@ -72,18 +72,30 @@ namespace CamPreview
             {
                 return;
             }
-            ctrl.capturePreviewViewModel.StartVideoCapture(newMonikerString);
+            ctrl.capturePreviewViewModel.StopVideoCapture();
+            // 同じものが選ばれたら単にキャプチャを停止する
+            // FIXME 想定通り動かない（もしかして同じところをクリックされても Changed ではないから呼ばれてない？）
+            if (newMonikerString == ctrl.capturePreviewViewModel.VideoCapture?.Source)
+            {
+                return;
+            }
+            ctrl.capturePreviewViewModel?.StartVideoCapture(newMonikerString);
             Debug.WriteLine($"connected:{newMonikerString}");
         }
         private static void OnAudioDevicePropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
-
             var ctrl = (CapturePreview)obj;
             if (!(e.NewValue is WasapiAudioDevice) || ctrl == null)
             {
                 return;
             }
             var newDevice = (WasapiAudioDevice)e.NewValue;
+            ctrl.capturePreviewViewModel.StopAudioCapture();
+            // 同じものが選ばれたら単にキャプチャを停止する
+            if (newDevice.DeviceNumber == ctrl.capturePreviewViewModel.AudioCapture?.Device.DeviceNumber)
+            {
+                return;
+            }
             ctrl.capturePreviewViewModel.StartAudioCapture(newDevice);
             Debug.WriteLine($"connected:{newDevice.Name}");
         }
