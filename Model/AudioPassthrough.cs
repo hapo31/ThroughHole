@@ -21,6 +21,8 @@ namespace CamPreview.Model
 
         public bool Disposed { get; private set; } = false;
 
+        public WasapiAudioDevice Device { get; private set; }
+
         public float Volume
         {
             get
@@ -35,6 +37,7 @@ namespace CamPreview.Model
 
         public AudioPassthrough(WasapiAudioDevice device)
         {
+            Device = device;
             waveIn = device.ToSourceStream();
             waveIn.DataAvailable += WaveIn_DataAvailable;
             waveIn.RecordingStopped += WaveIn_RecordingStopped;
