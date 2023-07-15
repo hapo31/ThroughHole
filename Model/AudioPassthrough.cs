@@ -1,7 +1,9 @@
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Media;
@@ -10,60 +12,68 @@ namespace CamPreview.Model
 {
     internal class AudioPassthrough : IDisposable
     {
-        private IWavePlayer player;
-        private WasapiCapture waveIn;
+        private WaveIn waveIn;
+        private BufferedWaveProvider waveOutProvider;
 
-        private BufferedWaveProvider provider;
+        private IWavePlayer player;
+
+        private VolumeSampleProvider volumeSampleProvider;
 
         public bool Disposed { get; private set; } = false;
 
-        public AudioPassthrough(MMDevice device, MMDevice outputDevice)
+        public float Volume
         {
-            waveIn = new WasapiCapture(device);
+            get
+            {
+                return volumeSampleProvider.Volume;
+            }
+            set
+            {
+                volumeSampleProvider.Volume = value;
+            }
+        }
+
+        public AudioPassthrough(WasapiAudioDevice device)
+        {
+            waveIn = device.ToSourceStream();
             waveIn.DataAvailable += WaveIn_DataAvailable;
             waveIn.RecordingStopped += WaveIn_RecordingStopped;
-            waveIn.WaveFormat = new WaveFormat(48000, 16, 2);
 
-            provider = new BufferedWaveProvider(waveIn.WaveFormat);
-            player = new WasapiOut(outputDevice, AudioClientShareMode.Shared, false, 300);
-            player.Init(new VolumeWaveProvider16(provider));
+            waveOutProvider = new BufferedWaveProvider(waveIn.WaveFormat);
+            player = new WasapiOut(AudioClientShareMode.Shared, false, 300);
 
-            player.Play();
+            volumeSampleProvider = new VolumeSampleProvider(waveOutProvider.ToSampleProvider());
+            volumeSampleProvider.Volume = 2.0f;
+            player.Init(volumeSampleProvider);
             waveIn.StartRecording();
+            player.Play();
         }
-        public AudioPassthrough(MMDevice device) : this(device, new MMDeviceEnumerator().GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia))
-        { }
 
-        private void Stop()
+        private void WaveIn_RecordingStopped(object? sender, StoppedEventArgs e)
+        {
+            Dispose();
+        }
+
+        private void WaveIn_DataAvailable(object? sender, WaveInEventArgs e)
+        {
+            waveOutProvider.AddSamples(e.Buffer, 0, e.BytesRecorded);
+        }
+
+        public void Dispose()
         {
             if (player.PlaybackState != PlaybackState.Stopped)
             {
                 player.Stop();
                 player.Dispose();
             }
-            if (waveIn != null)
-            {
-                waveIn.DataAvailable -= WaveIn_DataAvailable;
-                waveIn.RecordingStopped -= WaveIn_RecordingStopped;
-                waveIn.StopRecording();
-                waveIn.Dispose();
-            }
-        }
 
-        private void WaveIn_RecordingStopped(object? sender, StoppedEventArgs e)
-        {
-            Stop();
-        }
+            waveIn.DataAvailable -= WaveIn_DataAvailable;
+            waveIn.RecordingStopped -= WaveIn_RecordingStopped;
+            waveIn.StopRecording();
+            waveIn.Dispose();
 
-        private void WaveIn_DataAvailable(object? sender, WaveInEventArgs e)
-        {
-            provider.AddSamples(e.Buffer, 0, e.BytesRecorded);
-            Console.WriteLine("{0}", e.BytesRecorded);
-        }
+            waveOutProvider.ClearBuffer();
 
-        public void Dispose()
-        {
-            Stop();
             Disposed = true;
         }
     }

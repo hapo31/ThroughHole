@@ -26,7 +26,7 @@ namespace CamPreview.ViewModel
 
         public CapturePreviewViewModel() { }
 
-        public void StartAudioCapture(MMDevice device)
+        public void StartAudioCapture(WasapiAudioDevice device)
         {
             CloseAudioDevice();
             audioCapture = new AudioPassthrough(device);
@@ -43,6 +43,7 @@ namespace CamPreview.ViewModel
         public void Disconnect()
         {
             CloseVideoDevice();
+            CloseAudioDevice();
         }
 
         private void CloseVideoDevice()
@@ -74,6 +75,7 @@ namespace CamPreview.ViewModel
         public void Dispose()
         {
             CloseVideoDevice();
+            CloseAudioDevice();
         }
     }
 }

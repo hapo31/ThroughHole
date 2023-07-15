@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,13 +11,16 @@ namespace CamPreview.Model
 {
     public class WasapiAudioDevices
     {
-        public string? Name { set; get; }
-        public MMDevice? Device { private set; get; }
-
-        public static IEnumerable<WasapiAudioDevices> Enumurate()
+        public static IEnumerable<WasapiAudioDevice> Enumurate()
         {
-            return from device in new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.All)
-                   select new WasapiAudioDevices { Name = $"{device.FriendlyName}", Device = device };
+            var devices = new List<WasapiAudioDevice>();
+
+            for (var i = 0; i < WaveIn.DeviceCount; i++)
+            {
+                devices.Add(new WasapiAudioDevice(i));
+
+            }
+            return devices;
         }
     }
 }

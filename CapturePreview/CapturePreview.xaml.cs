@@ -36,7 +36,7 @@ namespace CamPreview
 
         public static readonly DependencyProperty AudioCaptureDeviceProperty = DependencyProperty.Register(
             "AudioCaptureDevice",
-            typeof(MMDevice),
+            typeof(WasapiAudioDevice),
             typeof(CapturePreview),
             new PropertyMetadata(new PropertyChangedCallback(OnAudioDevicePropertyChanged)));
 
@@ -79,15 +79,13 @@ namespace CamPreview
         {
 
             var ctrl = (CapturePreview)obj;
-            Debug.WriteLine($"changed:{e.NewValue}");
-            Debug.WriteLine($"changed:{e.NewValue.GetType().FullName}");
-            if (!(e.NewValue is MMDevice) || ctrl == null)
+            if (!(e.NewValue is WasapiAudioDevice) || ctrl == null)
             {
                 return;
             }
-            var newDevice = (MMDevice)e.NewValue;
+            var newDevice = (WasapiAudioDevice)e.NewValue;
             ctrl.capturePreviewViewModel.StartAudioCapture(newDevice);
-            Debug.WriteLine($"connected:{newDevice.DeviceFriendlyName}");
+            Debug.WriteLine($"connected:{newDevice.Name}");
         }
 
         public void Dispose()

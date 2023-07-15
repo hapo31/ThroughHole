@@ -17,7 +17,7 @@ namespace CamPreview.ViewModel
         private List<MenuItem> videoDevicesMenu;
         private List<MenuItem> audioDevicesMenu;
         private string? connectedVideoDeviceMonikerString;
-        private MMDevice? connectedAudioDevice;
+        private WasapiAudioDevice? connectedAudioDevice;
 
         public string? ConnectedVideoDeviceMonikerString
         {
@@ -37,7 +37,7 @@ namespace CamPreview.ViewModel
             }
         }
 
-        public MMDevice? ConnectedAudioDevice
+        public WasapiAudioDevice? ConnectedAudioDevice
         {
             get => connectedAudioDevice;
             set
@@ -49,7 +49,8 @@ namespace CamPreview.ViewModel
                 connectedAudioDevice = value;
                 foreach (var menuItem in audioDevicesMenu)
                 {
-                    menuItem.IsChecked = menuItem.Tag is MMDevice && ((MMDevice)menuItem.Tag).ID == value?.ID;
+                    var device = menuItem.Tag as WasapiAudioDevice;
+                    menuItem.IsChecked = device != null && device.DeviceNumber == value?.DeviceNumber;
                 }
                 RaisePropertyChanged("ConnectedAudioDevice");
             }
@@ -92,7 +93,7 @@ namespace CamPreview.ViewModel
         public MainWindowViewModel()
         {
             videoDevicesMenu = (from device in DeviceFilters.Enumurate() select new MenuItem() { Header = device.Name, Tag = device.MonikerString }).ToList();
-            audioDevicesMenu = (from device in WasapiAudioDevices.Enumurate() select new MenuItem() { Header = device.Name, Tag = device.Device }).ToList();
+            audioDevicesMenu = (from device in WasapiAudioDevices.Enumurate() select new MenuItem() { Header = device.Name, Tag = device }).ToList();
         }
 
         protected virtual void RaisePropertyChanged(string propertyName)

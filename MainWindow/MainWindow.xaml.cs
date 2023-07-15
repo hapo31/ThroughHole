@@ -54,7 +54,7 @@ namespace CamPreview
 
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        private void CloseMenuItem_Click(object sender, RoutedEventArgs e)
         {
             CapturePreview.Dispose();
             Close();
@@ -78,7 +78,7 @@ namespace CamPreview
             {
                 return;
             }
-            var captureTargetAudioDevice = clicked.Tag as MMDevice;
+            var captureTargetAudioDevice = clicked.Tag as WasapiAudioDevice;
 
             mainWindowViewModel.ConnectedAudioDevice = captureTargetAudioDevice;
         }
