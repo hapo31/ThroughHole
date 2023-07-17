@@ -68,7 +68,14 @@ namespace CamPreview
                 return;
             }
             var videoDeviceMonikerString = clicked.Tag as string;
-            mainWindowViewModel.ConnectedVideoDeviceMonikerString = videoDeviceMonikerString;
+            if (mainWindowViewModel.ConnectedVideoDeviceMonikerString == videoDeviceMonikerString)
+            {
+                mainWindowViewModel.ConnectedVideoDeviceMonikerString = null;
+            }
+            else
+            {
+                mainWindowViewModel.ConnectedVideoDeviceMonikerString = videoDeviceMonikerString;
+            }
         }
 
         private void CaptureAudioDeviceMenuClick(object sender, RoutedEventArgs e)
@@ -80,7 +87,14 @@ namespace CamPreview
             }
             var captureTargetAudioDevice = clicked.Tag as WasapiAudioDevice;
 
-            mainWindowViewModel.ConnectedAudioDevice = captureTargetAudioDevice;
+            if (mainWindowViewModel.ConnectedAudioDevice != null && mainWindowViewModel.ConnectedAudioDevice?.DeviceNumber == captureTargetAudioDevice?.DeviceNumber)
+            {
+                mainWindowViewModel.ConnectedAudioDevice = null;
+            }
+            else
+            {
+                mainWindowViewModel.ConnectedAudioDevice = captureTargetAudioDevice;
+            }
         }
 
         private void MuteMenuItemClick(object sender, RoutedEventArgs e)

@@ -53,9 +53,9 @@ namespace CamPreview
             set { SetValue(VideoCaptureMonikerStringProperty, value); }
         }
 
-        public string AudioCaptureDevice
+        public WasapiAudioDevice AudioCaptureDevice
         {
-            get => (string)GetValue(AudioCaptureDeviceProperty);
+            get => (WasapiAudioDevice)GetValue(AudioCaptureDeviceProperty);
             set { SetValue(AudioCaptureDeviceProperty, value); }
         }
 
@@ -68,14 +68,13 @@ namespace CamPreview
         {
             var newMonikerString = (string)e.NewValue;
             var ctrl = (CapturePreview)obj;
-            if (newMonikerString == null || ctrl == null)
+            if (ctrl == null)
             {
                 return;
             }
             ctrl.capturePreviewViewModel.StopVideoCapture();
-            // 同じものが選ばれたら単にキャプチャを停止する
-            // FIXME 想定通り動かない（もしかして同じところをクリックされても Changed ではないから呼ばれてない？）
-            if (newMonikerString == ctrl.capturePreviewViewModel.VideoCapture?.Source)
+            Debug.WriteLine($"disconnected video");
+            if (newMonikerString == null)
             {
                 return;
             }
@@ -85,18 +84,18 @@ namespace CamPreview
         private static void OnAudioDevicePropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             var ctrl = (CapturePreview)obj;
-            if (!(e.NewValue is WasapiAudioDevice) || ctrl == null)
+            if (ctrl == null)
             {
                 return;
             }
             var newDevice = (WasapiAudioDevice)e.NewValue;
             ctrl.capturePreviewViewModel.StopAudioCapture();
-            // 同じものが選ばれたら単にキャプチャを停止する
-            if (newDevice.DeviceNumber == ctrl.capturePreviewViewModel.AudioCapture?.Device.DeviceNumber)
+            Debug.WriteLine($"disconnected:{ctrl.capturePreviewViewModel?.AudioCapture?.Device.Name}");
+            if (newDevice == null)
             {
                 return;
             }
-            ctrl.capturePreviewViewModel.StartAudioCapture(newDevice);
+            ctrl.capturePreviewViewModel?.StartAudioCapture(newDevice);
             Debug.WriteLine($"connected:{newDevice.Name}");
         }
 
