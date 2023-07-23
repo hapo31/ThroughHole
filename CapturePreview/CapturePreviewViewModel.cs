@@ -9,14 +9,14 @@ using CamPreview.Model;
 using System.ComponentModel;
 using NAudio.CoreAudioApi;
 using System.Windows;
+using CamPreview.Lib;
 
 namespace CamPreview.ViewModel
 {
-    internal class CapturePreviewViewModel : INotifyPropertyChanged, IDisposable
+    internal class CapturePreviewViewModel : ViewModelBase, IDisposable
     {
 
         public event NewFrameEventHandler NewFrameGot = delegate { };
-        public event PropertyChangedEventHandler? PropertyChanged;
 
         public VideoCaptureDevice? VideoCapture { get; private set; }
         public AudioPassthrough? AudioCapture { get; private set; }
@@ -65,11 +65,6 @@ namespace CamPreview.ViewModel
             }
             AudioCapture.Dispose();
             AudioCapture = null;
-        }
-
-        protected virtual void RaisePropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public void Dispose()

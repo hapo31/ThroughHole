@@ -6,12 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using AForge.Video.DirectShow;
+using CamPreview.Lib;
 using CamPreview.Model;
 using NAudio.CoreAudioApi;
 
 namespace CamPreview.ViewModel
 {
-    internal class MainWindowViewModel : INotifyPropertyChanged
+    internal class MainWindowViewModel : ViewModelBase
     {
         private bool muted = false;
         private List<MenuItem> videoDevicesMenu;
@@ -86,7 +87,6 @@ namespace CamPreview.ViewModel
             }
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
         public delegate void OnClickVideoCaptureDeviceMenuHandler(object sender, DeviceFilters clickedDevice);
         public event OnClickVideoCaptureDeviceMenuHandler? onClickVideoCaptureDeviceMenu;
 
@@ -94,11 +94,6 @@ namespace CamPreview.ViewModel
         {
             videoDevicesMenu = (from device in DeviceFilters.Enumurate() select new MenuItem() { Header = device.Name, Tag = device.MonikerString }).ToList();
             audioDevicesMenu = (from device in WasapiAudioDevices.Enumurate() select new MenuItem() { Header = device.Name, Tag = device }).ToList();
-        }
-
-        protected virtual void RaisePropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 
