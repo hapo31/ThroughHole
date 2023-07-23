@@ -17,6 +17,7 @@
             <MenuItem Header="ビデオキャプチャデバイス" Name="CaptureVideoDevicesMenu" ItemsSource="{Binding VideoDevicesMenu}" Click="CaptureVideoDeviceMenuClick" />
             <MenuItem Header="オーディオキャプチャデバイス" Name="CaptureAudioDevicesMenu" ItemsSource="{Binding AudioDevicesMenu}" Click="CaptureAudioDeviceMenuClick" />
             <MenuItem Header="ミュート" IsChecked="{Binding Muted}" Click="MuteMenuItemClick"/>
+            <MenuItem Header="画面をクリップボードにコピー" Click="CopyToClipboardItemClick"/>
             <MenuItem Header="About" />
             <MenuItem Header="閉じる" Click="CloseMenuItem_Click" />
         </ContextMenu>

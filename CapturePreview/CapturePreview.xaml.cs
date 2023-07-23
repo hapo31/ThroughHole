@@ -59,6 +59,11 @@ namespace CamPreview
             set { SetValue(AudioCaptureDeviceProperty, value); }
         }
 
+        public void CopyPrevVideoFrameToClipboard()
+        {
+            capturePreviewViewModel?.CopyPrevVideoFrameToClipboard();
+        }
+
         private void onNewFrameGot(object sender, NewFrameEventArgs eventArgs)
         {
             Preview.Dispatcher.Invoke(new Action<Bitmap>(bmp => Preview.Source = BitmapToFrame.Convert(bmp)), eventArgs.Frame);

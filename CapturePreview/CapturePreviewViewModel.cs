@@ -10,6 +10,8 @@ using System.ComponentModel;
 using NAudio.CoreAudioApi;
 using System.Windows;
 using CamPreview.Lib;
+using System.Windows.Media.Imaging;
+using System.Diagnostics;
 
 namespace CamPreview.ViewModel
 {
@@ -18,7 +20,7 @@ namespace CamPreview.ViewModel
 
         public event NewFrameEventHandler NewFrameGot = delegate { };
 
-        public VideoCaptureDevice? VideoCapture { get; private set; }
+        public VideoCapture? VideoCapture { get; private set; }
         public AudioPassthrough? AudioCapture { get; private set; }
 
         // audioCapture は、オーディオデバイスが見つからない、あえて再生しないなどが考えられるので考慮しない
@@ -35,8 +37,8 @@ namespace CamPreview.ViewModel
         public void StartVideoCapture(string monikerString)
         {
             StopVideoCapture();
-            VideoCapture = new VideoCaptureDevice(monikerString);
-            VideoCapture.NewFrame += NewFrameGot;
+            VideoCapture = new VideoCapture(monikerString);
+            VideoCapture.NewFrameGot += NewFrameGot;
             VideoCapture.Start();
         }
 
@@ -52,8 +54,7 @@ namespace CamPreview.ViewModel
             {
                 return;
             }
-            VideoCapture.NewFrame -= NewFrameGot;
-            VideoCapture.SignalToStop();
+            VideoCapture.NewFrameGot -= NewFrameGot;
             VideoCapture = null;
         }
 
@@ -65,6 +66,24 @@ namespace CamPreview.ViewModel
             }
             AudioCapture.Dispose();
             AudioCapture = null;
+        }
+
+        public void CopyPrevVideoFrameToClipboard()
+        {
+            if (VideoCapture?.PrevFrame == null)
+            {
+                return;
+            }
+
+            // TODO: VideoCapture.PrevFrame から System.ArgumentException Parameter is not valid. が出る
+
+            BitmapSource bitmapSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
+                VideoCapture.PrevFrame.GetHbitmap(),
+                IntPtr.Zero,
+                Int32Rect.Empty,
+                BitmapSizeOptions.FromEmptyOptions()
+            );
+            Clipboard.SetImage(bitmapSource);
         }
 
         public void Dispose()
